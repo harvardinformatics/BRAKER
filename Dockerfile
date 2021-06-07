@@ -72,4 +72,16 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
 COPY --from=spaln_boundary_scorer /usr/local/bin/spaln_boundary_scorer /usr/local/bin/spaln_boundary_scorer
 COPY --from=augustus /opt/augustus /opt/augustus
 
-ENV PATH=/opt/augustus/bin:/opt/augustus/scripts:${PATH}
+# Register for GeneMark-ES/ET/EP at http://exon.gatech.edu/GeneMark/license_download.cgi (tested with ver 4.65)
+# NOTE: the bundled license key expires after 200 days
+ADD ./gmes_linux_64.tar.gz /opt
+RUN mkdir /opt/gm_key \
+  && mv /opt/gmes_linux_64/gm_key /opt/gm_key/.gm_key \
+  && cd /opt/gmes_linux_64 \
+  && perl change_path_in_perl_scripts.pl "/usr/bin/env perl"
+
+ENV ALIGNMENT_TOOL_PATH=/usr/local/bin/
+ENV AUGUSTUS_BIN_PATH=/usr/local/bin
+ENV AUGUSTUS_SCRIPTS_PATH=/usr/local/bin
+ENV GENEMARK_PATH=/opt/gmes_linux_64
+ENV PATH=/opt/augustus/bin:/opt/augustus/scripts:/opt/gmes_linux_64/ProtHint/bin:${PATH}
