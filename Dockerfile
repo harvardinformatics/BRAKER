@@ -7,6 +7,8 @@ RUN apt update && apt install -y --no-install-recommends \
   wget \
   && rm -rf /var/lib/apt/lists/*
 
+# Shouldn't be strictly necessary to build our own spaln_boundary_scorer, as
+# latest version of ProtHint bundles it, but at least we know how just in case...
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # 2021-02-22
 RUN wget -O - https://github.com/gatech-genemark/spaln-boundary-scorer/archive/b48977154a75a8559ff0398b8858dc2a51768632.tar.gz | tar -xzf - \
@@ -52,6 +54,7 @@ RUN mkdir /src && cd /src \
 FROM ubuntu:20.04 AS braker
 
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+  ca-certificates \
   cdbfasta \
   diamond-aligner \
   libbamtools2.5.1 \
@@ -67,18 +70,27 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
   libsuitesparseconfig5 \
   libyaml-perl \
   python3-biopython \
-  samtools
+  samtools \
+  spaln \
+  wget
 
-COPY --from=spaln_boundary_scorer /usr/local/bin/spaln_boundary_scorer /usr/local/bin/spaln_boundary_scorer
+COPY --from=spaln_boundary_scorer /usr/local/bin/spaln_boundary_scorer /usr/local/bin/
 COPY --from=augustus /opt/augustus /opt/augustus
 
 # Register for GeneMark-ES/ET/EP at http://exon.gatech.edu/GeneMark/license_download.cgi (tested with ver 4.65)
 # NOTE: the bundled license key expires after 200 days
 ADD ./gmes_linux_64.tar.gz /opt
+
+# Use more recnet ProtHint for https://github.com/gatech-genemark/ProtHint/pull/31
+# Using ubuntu package versions of diamond & spaln instead of stale static builds
 RUN mkdir /opt/gm_key \
   && mv /opt/gmes_linux_64/gm_key /opt/gm_key/.gm_key \
   && cd /opt/gmes_linux_64 \
-  && perl change_path_in_perl_scripts.pl "/usr/bin/env perl"
+  && perl change_path_in_perl_scripts.pl "/usr/bin/env perl" \
+  && rm -rf ProtHint \
+  && wget -O - https://github.com/gatech-genemark/ProtHint/archive/524c27f4d62b7b4314b32c50c45cedabf688be98.tar.gz | tar -xzf - \
+  && mv ProtHint-* ProtHint \
+  && rm -rf ProtHint/examples ProtHint/tests ProtHint/dependencies/diamond ProtHint/dependencies/spaln* \
 
 ENV ALIGNMENT_TOOL_PATH=/usr/local/bin/
 ENV AUGUSTUS_BIN_PATH=/usr/local/bin
