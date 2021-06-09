@@ -90,7 +90,13 @@ RUN mkdir /opt/gm_key \
   && rm -rf ProtHint \
   && wget -O - https://github.com/gatech-genemark/ProtHint/archive/524c27f4d62b7b4314b32c50c45cedabf688be98.tar.gz | tar -xzf - \
   && mv ProtHint-* ProtHint \
-  && rm -rf ProtHint/examples ProtHint/tests ProtHint/dependencies/diamond ProtHint/dependencies/spaln* \
+  && rm -rf ProtHint/examples ProtHint/tests ProtHint/dependencies/diamond ProtHint/dependencies/spaln*
+
+# a la https://github.com/bioconda/bioconda-recipes/pull/28922
+RUN wget -O - https://github.com/Gaius-Augustus/TSEBRA/archive/refs/tags/v1.0.1.tar.gz | tar -xzf - \
+  && sed -i.bak -e 's#from \([^ ]*\) import#from tsebra_mod.\1 import#' TSEBRA-1.0.1/bin/*.py \
+  && mv TSEBRA-1.0.1/bin/tsebra.py TSEBRA-1.0.1/bin/fix_gtf_ids.py /usr/local/bin \
+  && mv TSEBRA-1.0.1/bin/ $(python3 -c 'import site; print(site.getsitepackages()[0])')/tsebra_mod
 
 ENV ALIGNMENT_TOOL_PATH=/usr/local/bin/
 ENV AUGUSTUS_BIN_PATH=/usr/local/bin
