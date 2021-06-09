@@ -69,9 +69,11 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
   libsqlite3-0 \
   libsuitesparseconfig5 \
   libyaml-perl \
+  openjdk-8-jre-headless \
   python3-biopython \
   samtools \
   spaln \
+  unzip \
   wget
 
 COPY --from=spaln_boundary_scorer /usr/local/bin/spaln_boundary_scorer /usr/local/bin/
@@ -81,7 +83,7 @@ COPY --from=augustus /opt/augustus /opt/augustus
 # NOTE: the bundled license key expires after 200 days
 ADD ./gmes_linux_64.tar.gz /opt
 
-# Use more recnet ProtHint for https://github.com/gatech-genemark/ProtHint/pull/31
+# Use more recent ProtHint for https://github.com/gatech-genemark/ProtHint/pull/31
 # Using ubuntu package versions of diamond & spaln instead of stale static builds
 RUN mkdir /opt/gm_key \
   && mv /opt/gmes_linux_64/gm_key /opt/gm_key/.gm_key \
@@ -97,6 +99,17 @@ RUN wget -O - https://github.com/Gaius-Augustus/TSEBRA/archive/refs/tags/v1.0.1.
   && sed -i.bak -e 's#from \([^ ]*\) import#from tsebra_mod.\1 import#' TSEBRA-1.0.1/bin/*.py \
   && mv TSEBRA-1.0.1/bin/tsebra.py TSEBRA-1.0.1/bin/fix_gtf_ids.py /usr/local/bin \
   && mv TSEBRA-1.0.1/bin/ $(python3 -c 'import site; print(site.getsitepackages()[0])')/tsebra_mod
+
+# Install GUSHR & dependency GeMoMa
+# https://github.com/Gaius-Augustus/GUSHR/issues/1
+RUN wget -O /usr/local/bin/gushr.py https://raw.githubusercontent.com/harvardinformatics/GUSHR/8aafe23/gushr.py \
+  && chmod +x /usr/local/bin/gushr.py
+RUN mkdir /tmp/GeMoMa \
+  && cd /tmp/GeMoMa \
+  && wget http://www.jstacs.de/downloads/GeMoMa-1.6.4.zip \
+  && unzip GeMoMa-1.6.4.zip \
+  && mv GeMoMa-1.6.4.jar /usr/local/bin \
+  && rm -rf /tmp/GeMoMa
 
 ENV ALIGNMENT_TOOL_PATH=/usr/local/bin/
 ENV AUGUSTUS_BIN_PATH=/usr/local/bin
