@@ -29,7 +29,6 @@ use Parallel::ForkManager;
 use FindBin;
 use lib "$FindBin::RealBin/.";
 use File::Which;                    # exports which()
-use List::MoreUtils qw( pairwise );
 use File::Which qw(which where);    # exports which() and where()
 
 use Cwd;
@@ -3618,7 +3617,7 @@ sub check_upfront {
         "Scalar::Util::Numeric", "POSIX", "List::Util",
         "FindBin", "File::Which", "Cwd", "File::Spec::Functions",
         "File::Basename", "File::Copy", "Term::ANSIColor",
-        "strict", "warnings", "List::MoreUtils",
+        "strict", "warnings",
         "Math::Utils"
     );
 

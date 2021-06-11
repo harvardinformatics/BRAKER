@@ -69,6 +69,7 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
   libsqlite3-0 \
   libsuitesparseconfig5 \
   libyaml-perl \
+  libscalar-util-numeric-perl \
   openjdk-8-jre-headless \
   python3-biopython \
   samtools \
