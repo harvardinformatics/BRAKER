@@ -19,7 +19,6 @@
 
 use Getopt::Long;
 use File::Compare;
-use File::HomeDir;
 use File::Copy;
 use File::Path qw(make_path rmtree);
 use Module::Load::Conditional qw(can_load check_install requires);
@@ -3619,7 +3618,7 @@ sub check_upfront {
         "Scalar::Util::Numeric", "POSIX", "List::Util",
         "FindBin", "File::Which", "Cwd", "File::Spec::Functions",
         "File::Basename", "File::Copy", "Term::ANSIColor",
-        "strict", "warnings", "File::HomeDir", "List::MoreUtils",
+        "strict", "warnings", "List::MoreUtils",
         "Math::Utils"
     );
 

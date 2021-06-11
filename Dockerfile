@@ -111,6 +111,8 @@ RUN mkdir /tmp/GeMoMa \
   && mv GeMoMa-1.6.4.jar /usr/local/bin \
   && rm -rf /tmp/GeMoMa
 
+COPY scripts/ /usr/local/bin/
+
 ENV ALIGNMENT_TOOL_PATH=/usr/local/bin/
 ENV AUGUSTUS_BIN_PATH=/usr/local/bin
 ENV AUGUSTUS_SCRIPTS_PATH=/usr/local/bin
