@@ -63,7 +63,7 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-rec
   libdbd-mysql-perl \
   libfile-which-perl \
   libgsl23 \
-  libcamd2 \
+  libcolamd2 \
   libparallel-forkmanager-perl \
   libseqlib1 \
   libsqlite3-0 \
