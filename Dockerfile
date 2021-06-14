@@ -119,12 +119,16 @@ RUN wget -O - https://github.com/Gaius-Augustus/TSEBRA/archive/refs/tags/v1.0.1.
 # https://github.com/Gaius-Augustus/GUSHR/issues/1
 RUN wget -O /usr/local/bin/gushr.py https://raw.githubusercontent.com/harvardinformatics/GUSHR/8aafe23/gushr.py \
   && chmod +x /usr/local/bin/gushr.py
+# work around https://github.com/Jstacs/Jstacs/issues/12 by creating a GeMoMa.ini.xml with the defaults
 RUN mkdir /tmp/GeMoMa \
   && cd /tmp/GeMoMa \
   && wget http://www.jstacs.de/downloads/GeMoMa-1.6.4.zip \
   && unzip GeMoMa-1.6.4.zip \
   && mv GeMoMa-1.6.4.jar /usr/local/bin \
-  && rm -rf /tmp/GeMoMa
+  && rm -rf /tmp/GeMoMa \
+  && printf '%s\n' '<maxSize><className>java.lang.Integer</className>-1</maxSize>\n' \
+                   '<timeOut><className>java.lang.Long</className>3600</timeOut>\n' \
+                   '<maxTimeOut><className>java.lang.Long</className>604800</maxTimeOut>\n' > /usr/local/bin/GeMoMa.ini.xml
 
 COPY scripts/ /usr/local/bin/
 
